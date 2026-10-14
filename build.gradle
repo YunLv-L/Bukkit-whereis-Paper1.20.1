@@ -1,43 +1,31 @@
-    /*
-    build.gradle for whereis Minecraft plugin.
-    */
 plugins {
     id 'java'
 }
 
-group 'me.diademiemi.whereis'
-version '1.0.0'
+group = 'me.diademiemi'
+version = '1.1.0'
 
 repositories {
-  /*
-   As Spigot-API depends on the Bungeecord ChatComponent-API,
-  we need to add the Sonatype OSS repository, as Gradle,
-  in comparison to maven, doesn't want to understand the ~/.m2
-  directory unless added using mavenLocal(). Maven usually just gets
-  it from there, as most people have run the BuildTools at least once.
-  This is therefore not needed if you're using the full Spigot/CraftBukkit,
-  or if you're using the Bukkit API.
-  */
     mavenCentral()
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
-    maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    maven { url 'https://repo.papermc.io/repository/maven-public/' }
 }
 
 dependencies {
-     compileOnly 'org.spigotmc:spigot-api:1.13.2-R0.1-SNAPSHOT'
+    compileOnly 'io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT'
 }
 
- test {
-    useJUnitPlatform()
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
- /* Assume you have built a jar from earlier production.
-   This will ensure removal of any resources that was cached in any earlier build,
-   so that the new jar you produce will generate the newest version of your resources. */
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
 processResources {
-    doFirst {
-        file("$buildDir/resources/main").listFiles().each {
-            it.delete()
-        }
+    filesMatching('plugin.yml') {
+        expand(version: project.version)
     }
 }
